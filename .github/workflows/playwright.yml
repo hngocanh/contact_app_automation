@@ -58,7 +58,19 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: public
-          path: .
+          path: ./artifact
+      - name: Normalize artifact into public/
+        run: |
+          set -e
+          echo "Artifact contents:"
+          ls -la artifact || true
+          rm -rf public || true
+          if [ -d artifact/public ]; then
+            mv artifact/public ./public
+          else
+            mkdir -p public
+            mv artifact/* public/ || true
+          fi
       - name: Debug list public
         run: |
           echo "public contents:"
