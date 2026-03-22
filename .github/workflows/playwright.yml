@@ -22,11 +22,12 @@ jobs:
       run: npx playwright install --with-deps
     - name: Run Playwright tests
       run: npx playwright test
-    - name: Upload report for GitHub Pages
+    - name: Prepare pages folder
       if: always()
-      uses: actions/upload-pages-artifact@v1
-      with:
-        path: playwright-report
+      run: |
+        rm -rf public || true
+        mkdir -p public
+        cp -R playwright-report/* public/ || true
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
@@ -38,8 +39,10 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     permissions:
-      pages: write
-      id-token: write
+      contents: write
     steps:
-      - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v1
+      - name: Deploy to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
