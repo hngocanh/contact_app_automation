@@ -28,6 +28,12 @@ jobs:
         rm -rf public || true
         mkdir -p public
         cp -R playwright-report/* public/ || true
+    - name: Upload pages artifact
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: public
+        path: public
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
@@ -41,6 +47,11 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Download pages artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: public
+          path: .
       - name: Deploy to gh-pages branch
         uses: peaceiris/actions-gh-pages@v3
         with:
