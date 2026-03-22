@@ -22,7 +22,7 @@ jobs:
       run: npx playwright install --with-deps
     - name: Run Playwright tests
       run: npx playwright test
-    - name: Debug: list report
+    - name: Debug list report
       if: always()
       run: |
         echo "Report dir listing:"
@@ -59,7 +59,7 @@ jobs:
         with:
           name: public
           path: .
-      - name: Debug: list public
+      - name: Debug list public
         run: |
           echo "public contents:"
           ls -la public || true
