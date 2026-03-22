@@ -22,6 +22,13 @@ jobs:
       run: npx playwright install --with-deps
     - name: Run Playwright tests
       run: npx playwright test
+    - name: Debug: list report
+      if: always()
+      run: |
+        echo "Report dir listing:"
+        ls -la playwright-report || true
+        echo "Index exists?:"
+        if [ -f playwright-report/index.html ]; then echo "index.html exists"; else echo "index.html missing"; fi
     - name: Prepare pages folder
       if: always()
       run: |
@@ -52,6 +59,10 @@ jobs:
         with:
           name: public
           path: .
+      - name: Debug: list public
+        run: |
+          echo "public contents:"
+          ls -la public || true
       - name: Deploy to gh-pages branch
         uses: peaceiris/actions-gh-pages@v3
         with:
