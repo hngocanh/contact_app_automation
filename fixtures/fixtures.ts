@@ -7,19 +7,19 @@ import { User } from '../types/api.types';
 
 interface AuthState {
   token: string;
-  user:  User;
+  user: User;
 }
 
 type CustomFixtures = {
   /** Token + user object written by global-setup. Use to authenticate clients. */
-  authState:          AuthState;
-  loginPage:          LoginPage;
+  authState: AuthState;
+  loginPage: LoginPage;
   /** UsersApiClient pre-authenticated with the token from global-setup. */
-  usersApiClient:     UsersApiClient;
+  usersApiClient: UsersApiClient;
   /** ContactsApiClient pre-authenticated with the token from global-setup. */
-  contactsApiClient:  ContactsApiClient;
+  contactsApiClient: ContactsApiClient;
   /** A browser page with the JWT already injected into localStorage. */
-  authenticatedPage:  Page;
+  authenticatedPage: Page;
 };
 
 /**
@@ -28,7 +28,8 @@ type CustomFixtures = {
 export const test = base.extend<CustomFixtures>({
 
   // Reads the token file written by global-setup once per worker
-  authState: async ({}, use) => {
+  authState: async ({ }, use) => {
+
     const statePath = process.env.AUTH_STATE_PATH ?? 'test-results/.auth/state.json';
     const raw = fs.readFileSync(statePath, 'utf-8');
     await use(JSON.parse(raw) as AuthState);
