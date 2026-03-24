@@ -20,9 +20,9 @@ export class LoginPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.emailInput    = page.locator('#email');
-    this.passwordInput = page.locator('#password');
-    this.submitButton  = page.locator('#submit');
+    this.emailInput    = page.locator('#email1');
+    this.passwordInput = page.locator('#password1');
+    this.submitButton  = page.locator('#submit1');
     this.signUpLink    = page.locator('#signup');
     this.errorMessage  = page.locator('#error');
   }
