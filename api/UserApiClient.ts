@@ -73,10 +73,15 @@ export class UsersApiClient extends BaseApiClient {
 
   /**
    * Log out — invalidates the current JWT on the server.
-   * POST /users/logout → 200
+   * POST /users/logout → 200 (empty response body)
    */
   async logout(): Promise<void> {
-    await this.post<unknown>(`${UsersApiClient.BASE}/logout`, {});
+    const res = await this.rawPost(`${UsersApiClient.BASE}/logout`, {});
+    // Check if logout was successful (200 status)
+    if (!res.ok()) {
+      const text = await res.text();
+      throw new Error(`HTTP ${res.status()} — ${text}`);
+    }
     this.clearAuthToken();
   }
 
