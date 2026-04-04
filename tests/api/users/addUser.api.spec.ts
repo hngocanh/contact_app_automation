@@ -1,5 +1,6 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../../../fixtures/fixtures';
 import { UsersApiClient } from '@api/UserApiClient';
+import { makeUniqueEmail } from '../../../utils/testHelpers';
 
 test.describe('POST /users — Add User API', () => {
     // Store created user IDs and tokens for cleanup
@@ -23,8 +24,7 @@ test.describe('POST /users — Add User API', () => {
 
     // ── Happy Path Tests ───────────────────────────────────────────────────────
 
-    test('successfully adds a new user with valid data', async ({ request }) => {
-        const uniqueEmail = `testuser_${Date.now()}@example.com`;
+    test('successfully adds a new user with valid data', async ({ request, uniqueEmail }) => {
         const newUser = {
             firstName: 'Test',
             lastName: 'User',
@@ -54,8 +54,7 @@ test.describe('POST /users — Add User API', () => {
         expect(res.token.length).toBeGreaterThan(0);
     });
 
-    test('creates user with minimal valid data', async ({ request }) => {
-        const uniqueEmail = `minimal_${Date.now()}@example.com`;
+    test('creates user with minimal valid data', async ({ request, uniqueEmail }) => {
         const newUser = {
             firstName: 'Min',
             lastName: 'User',
@@ -73,8 +72,7 @@ test.describe('POST /users — Add User API', () => {
         expect(res.user.email).toBe(newUser.email);
     });
 
-    test('creates user with special characters in name', async ({ request }) => {
-        const uniqueEmail = `special_${Date.now()}@example.com`;
+    test('creates user with special characters in name', async ({ request, uniqueEmail }) => {
         const newUser = {
             firstName: "O'Connor",
             lastName: 'Smith-Jones',
@@ -97,7 +95,7 @@ test.describe('POST /users — Add User API', () => {
         const client = new UsersApiClient(request);
         const res = await client.rawAddUser({
             lastName: 'User',
-            email: `test_${Date.now()}@example.com`,
+            email: makeUniqueEmail('bad'),
             password: 'Pass123',
         });
         expect(res.status()).toBe(400);
@@ -107,7 +105,7 @@ test.describe('POST /users — Add User API', () => {
         const client = new UsersApiClient(request);
         const res = await client.rawAddUser({
             firstName: 'Test',
-            email: `test_${Date.now()}@example.com`,
+            email: makeUniqueEmail('bad'),
             password: 'Pass123',
         });
         expect(res.status()).toBe(400);
@@ -128,7 +126,7 @@ test.describe('POST /users — Add User API', () => {
         const res = await client.rawAddUser({
             firstName: 'Test',
             lastName: 'User',
-            email: `test_${Date.now()}@example.com`,
+            email: makeUniqueEmail('bad'),
         });
         expect(res.status()).toBe(400);
     });
@@ -138,7 +136,7 @@ test.describe('POST /users — Add User API', () => {
         const res = await client.rawAddUser({
             firstName: '',
             lastName: 'User',
-            email: `test_${Date.now()}@example.com`,
+            email: makeUniqueEmail('bad'),
             password: 'Pass123',
         });
         expect(res.status()).toBe(400);
@@ -149,7 +147,7 @@ test.describe('POST /users — Add User API', () => {
         const res = await client.rawAddUser({
             firstName: 'Test',
             lastName: '',
-            email: `test_${Date.now()}@example.com`,
+            email: makeUniqueEmail('bad'),
             password: 'Pass123',
         });
         expect(res.status()).toBe(400);
@@ -171,7 +169,7 @@ test.describe('POST /users — Add User API', () => {
         const res = await client.rawAddUser({
             firstName: 'Test',
             lastName: 'User',
-            email: `test_${Date.now()}@example.com`,
+            email: makeUniqueEmail('bad'),
             password: '',
         });
         expect(res.status()).toBe(400);
@@ -194,8 +192,7 @@ test.describe('POST /users — Add User API', () => {
         expect(res.status()).toBe(400);
     });
 
-    test('returns 400 when email already exists', async ({ request }) => {
-        const uniqueEmail = `duplicate_${Date.now()}@example.com`;
+    test('returns 400 when email already exists', async ({ request, uniqueEmail }) => {
         const newUser = {
             firstName: 'Test',
             lastName: 'User',

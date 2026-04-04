@@ -1,5 +1,6 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '@fixtures/fixtures';
 import { UsersApiClient } from '@api/UserApiClient'
+import { makeUniqueEmail } from '@utils/testHelpers';
 
 test.describe('PUT /users/me — Update User Profile API', () => {
     // Store created user IDs and tokens for cleanup
@@ -23,13 +24,12 @@ test.describe('PUT /users/me — Update User Profile API', () => {
 
     // ── HAPPY PATH: Successful updates ──────────────────────────────────
 
-    test('allows updating all user profile fields at once', async ({ request }) => {
-        // Create a new user for testing
-        const timestamp = Date.now();
+    test('allows updating all user profile fields at once', async ({ request, uniqueEmail }) => {
+        // Create a new user for testing (uniqueEmail provided by fixture)
         const newUser = {
             firstName: 'John',
             lastName: 'Doe',
-            email: `all_${timestamp}@example.com`,
+            email: uniqueEmail,
             password: 'Pass123',
         };
 
@@ -44,7 +44,7 @@ test.describe('PUT /users/me — Update User Profile API', () => {
         const updateData = {
             firstName: 'Jane',
             lastName: 'Smith',
-            email: `allupdated_${timestamp}@example.com`,
+            email: makeUniqueEmail('updated'), // Ensure new unique email for update
             password: 'NewPass456',
         };
         const res = await client.updateProfile(updateData);
@@ -62,14 +62,12 @@ test.describe('PUT /users/me — Update User Profile API', () => {
         expect(res.email).toBe(updateData.email);
     });
 
-    test('allows updating only firstName', async ({ request }) => {
-        // Create a new user
-        const timestamp = Date.now();
-        const randomId = Math.random().toString(36).substring(7);
+    test('allows updating only firstName', async ({ request, uniqueEmail }) => {
+        // Create a new user (uniqueEmail provided by fixture)
         const newUser = {
             firstName: 'FirstName',
             lastName: 'LastName',
-            email: `firstname_${timestamp}_${randomId}@example.com`,
+            email: uniqueEmail,
             password: 'Pass123',
         };
 
@@ -89,13 +87,11 @@ test.describe('PUT /users/me — Update User Profile API', () => {
         expect(res.email).toBe(newUser.email);
     });
 
-    test('allows updating only lastName', async ({ request }) => {
-        const timestamp = Date.now();
-        const randomId = Math.random().toString(36).substring(7);
+    test('allows updating only lastName', async ({ request, uniqueEmail }) => {
         const newUser = {
             firstName: 'FirstName',
             lastName: 'LastName',
-            email: `lastname_${timestamp}_${randomId}@example.com`,
+            email: uniqueEmail,
             password: 'Pass123',
         };
 
@@ -115,13 +111,11 @@ test.describe('PUT /users/me — Update User Profile API', () => {
         expect(res.email).toBe(newUser.email);
     });
 
-    test('allows updating only email', async ({ request }) => {
-        const timestamp = Date.now();
-        const randomId = Math.random().toString(36).substring(7);
+    test('allows updating only email', async ({ request, uniqueEmail }) => {
         const newUser = {
             firstName: 'FirstName',
             lastName: 'LastName',
-            email: `email_${timestamp}_${randomId}@example.com`,
+            email: uniqueEmail,
             password: 'Pass123',
         };
 
@@ -131,7 +125,7 @@ test.describe('PUT /users/me — Update User Profile API', () => {
         client.setAuthToken(addRes.token);
 
         // Update only email
-        const newEmail = `newemail_${timestamp}_${randomId}@example.com`;
+        const newEmail = makeUniqueEmail('updated');
         const updateData = { email: newEmail };
         const res = await client.updateProfile(updateData);
 
@@ -142,8 +136,7 @@ test.describe('PUT /users/me — Update User Profile API', () => {
         expect(res.lastName).toBe(newUser.lastName);
     });
 
-    test('allows updating only password', async ({ request }) => {
-        const uniqueEmail = `update_${Date.now()}@example.com`;
+    test('allows updating only password', async ({ request, uniqueEmail }) => {
         const newUser = {
             firstName: 'FirstName',
             lastName: 'LastName',
@@ -171,8 +164,7 @@ test.describe('PUT /users/me — Update User Profile API', () => {
         expect(res.email).toBe(newUser.email);
     });
 
-    test('allows updating firstName and lastName together', async ({ request }) => {
-        const uniqueEmail = `update_${Date.now()}@example.com`;
+    test('allows updating firstName and lastName together', async ({ request, uniqueEmail }) => {
         const newUser = {
             firstName: 'FirstName',
             lastName: 'LastName',
@@ -199,12 +191,11 @@ test.describe('PUT /users/me — Update User Profile API', () => {
         expect(res.email).toBe(newUser.email);
     });
 
-    test('allows updating with special characters in firstName and lastName', async ({ request }) => {
-        const timestamp = Date.now();
+    test('allows updating with special characters in firstName and lastName', async ({ request, uniqueEmail }) => {
         const newUser = {
             firstName: 'John',
             lastName: 'Doe',
-            email: `special_${timestamp}@example.com`,
+            email: uniqueEmail,
             password: 'Pass123',
         };
 
@@ -264,9 +255,8 @@ test.describe('PUT /users/me — Update User Profile API', () => {
 
     // ── NEGATIVE TESTS: Invalid data ─────────────────────────────────────────
 
-    test('returns 400 when updating with empty firstName', async ({ request }) => {
-        // Create a new user first
-        const uniqueEmail = `update_${Date.now()}@example.com`;
+    test('returns 400 when updating with empty firstName', async ({ request, uniqueEmail }) => {
+        // Create a new user first (uniqueEmail provided by fixture)
         const newUser = {
             firstName: 'John',
             lastName: 'Doe',
@@ -287,8 +277,7 @@ test.describe('PUT /users/me — Update User Profile API', () => {
         expect(res.status()).toBe(400);
     });
 
-    test('returns 400 when updating with empty lastName', async ({ request }) => {
-        const uniqueEmail = `update_${Date.now()}@example.com`;
+    test('returns 400 when updating with empty lastName', async ({ request, uniqueEmail }) => {
         const newUser = {
             firstName: 'John',
             lastName: 'Doe',
@@ -309,8 +298,7 @@ test.describe('PUT /users/me — Update User Profile API', () => {
         expect(res.status()).toBe(400);
     });
 
-    test('returns 400 when updating with invalid email format', async ({ request }) => {
-        const uniqueEmail = `update_${Date.now()}@example.com`;
+    test('returns 400 when updating with invalid email format', async ({ request, uniqueEmail }) => {
         const newUser = {
             firstName: 'John',
             lastName: 'Doe',
@@ -331,13 +319,11 @@ test.describe('PUT /users/me — Update User Profile API', () => {
         expect(res.status()).toBe(400);
     });
 
-    test('returns 400 when updating with empty email', async ({ request }) => {
-        const timestamp = Date.now();
-        const randomId = Math.random().toString(36).substring(7);
+    test('returns 400 when updating with empty email', async ({ request, uniqueEmail }) => {
         const newUser = {
             firstName: 'John',
             lastName: 'Doe',
-            email: `emptyemail_${timestamp}_${randomId}@example.com`,
+            email: uniqueEmail,
             password: 'Pass123',
         };
 
@@ -354,8 +340,7 @@ test.describe('PUT /users/me — Update User Profile API', () => {
         expect(res.status()).toBe(400);
     });
 
-    test('returns 400 when updating with empty password', async ({ request }) => {
-        const uniqueEmail = `update_${Date.now()}@example.com`;
+    test('returns 400 when updating with empty password', async ({ request, uniqueEmail }) => {
         const newUser = {
             firstName: 'John',
             lastName: 'Doe',
@@ -376,14 +361,13 @@ test.describe('PUT /users/me — Update User Profile API', () => {
         expect(res.status()).toBe(400);
     });
 
-    test('returns 400 when updating to an email that already exists', async ({ request }) => {
-        // Create first user
-        const timestamp = Date.now();
-        const email1 = `user1_${timestamp}@example.com`;
+    test('returns 400 when updating to an email that already exists', async ({ request, uniqueEmail }) => {
+        // Create first user (use fixture for one email)
+        const uniqueEmail1 = uniqueEmail;
         const user1 = {
             firstName: 'User',
             lastName: 'One',
-            email: email1,
+            email: uniqueEmail1,
             password: 'Pass123',
         };
 
@@ -392,11 +376,11 @@ test.describe('PUT /users/me — Update User Profile API', () => {
         createdUsers.push({ id: addRes1.user._id, token: addRes1.token });
 
         // Create second user
-        const email2 = `user2_${timestamp}@example.com`;
+        const uniqueEmail2 = makeUniqueEmail();
         const user2 = {
             firstName: 'User',
             lastName: 'Two',
-            email: email2,
+            email: uniqueEmail2,
             password: 'Pass123',
         };
 
@@ -405,7 +389,7 @@ test.describe('PUT /users/me — Update User Profile API', () => {
         client.setAuthToken(addRes2.token);
 
         // Try to update user2's email to user1's email (should fail)
-        const updateData = { email: email1 };
+        const updateData = { email: uniqueEmail1 };
         const res = await client.rawUpdateProfile(updateData);
 
         // Verify 400 Bad Request (email already in use)

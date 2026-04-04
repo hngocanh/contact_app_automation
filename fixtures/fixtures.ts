@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import { LoginPage } from '../pages/LoginPage';
 import { UsersApiClient } from '../api/UserApiClient';
 import { ContactsApiClient } from '../api/ContactsApiClient';
+import { makeUniqueEmail } from '../utils/testHelpers';
 import { User } from '../types/api.types';
 
 interface AuthState {
@@ -20,6 +21,8 @@ type CustomFixtures = {
   contactsApiClient: ContactsApiClient;
   /** A browser page with the JWT already injected into localStorage. */
   authenticatedPage: Page;
+  /** A unique email string generated per-test to avoid duplication */
+  uniqueEmail: string;
 };
 
 /**
@@ -51,6 +54,11 @@ export const test = base.extend<CustomFixtures>({
     const client = new ContactsApiClient(request);
     client.setAuthToken(authState.token);
     await use(client);
+  },
+
+  // Per-test unique email helper to avoid repeating makeUniqueEmail() in every spec
+  uniqueEmail: async ({ }, use) => {
+    await use(makeUniqueEmail());
   },
 
   // Injects the JWT into localStorage so the app treats the browser as logged in

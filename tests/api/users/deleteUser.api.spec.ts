@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '@fixtures/fixtures';
 import { UsersApiClient } from '@api/UserApiClient';
 
 test.describe('DELETE /users/me — Delete User API', () => {
@@ -23,9 +23,8 @@ test.describe('DELETE /users/me — Delete User API', () => {
 
     // ── HAPPY PATH: Successful deletions ────────────────────────────────────
 
-    test('successfully deletes the authenticated user', async ({ request }) => {
-        // Create a new user to delete
-        const uniqueEmail = `delete_${Date.now()}_${Math.random().toString(36).substring(7)}@example.com`;
+    test('successfully deletes the authenticated user', async ({ request, uniqueEmail }) => {
+        // Create a new user to delete (uniqueEmail provided by fixture)
         const newUser = {
             firstName: 'Delete',
             lastName: 'Test',
@@ -46,9 +45,8 @@ test.describe('DELETE /users/me — Delete User API', () => {
         expect(profileRes.status()).toBe(401); // Expect unauthorized after deletion
     });
 
-    test('deleted user cannot login with previous password', async ({ request }) => {
-        // Create a user
-        const uniqueEmail = `nologin_${Date.now()}_${Math.random().toString(36).substring(7)}@example.com`;
+    test('deleted user cannot login with previous password', async ({ request, uniqueEmail }) => {
+        // Create a user (uniqueEmail provided by fixture)
         const password = 'TestPass123';
         const newUser = {
             firstName: 'NoLogin',
@@ -75,9 +73,8 @@ test.describe('DELETE /users/me — Delete User API', () => {
         expect(loginRes.status()).toBe(401);
     });
 
-    test('deleted user profile is no longer accessible', async ({ request }) => {
-        // Create a user
-        const uniqueEmail = `noprofile_${Date.now()}_${Math.random().toString(36).substring(7)}@example.com`;
+    test('deleted user profile is no longer accessible', async ({ request, uniqueEmail }) => {
+        // Create a user (uniqueEmail provided by fixture)
         const newUser = {
             firstName: 'NoProfile',
             lastName: 'User',
@@ -103,8 +100,8 @@ test.describe('DELETE /users/me — Delete User API', () => {
         expect(profileAfter.status()).toBe(401);
     });
 
-    test('same email can be reused after user deletion', async ({ request }) => {
-        const sharedEmail = `reuse_${Date.now()}_${Math.random().toString(36).substring(7)}@example.com`;
+    test('same email can be reused after user deletion', async ({ request, uniqueEmail }) => {
+        const sharedEmail = uniqueEmail;
 
         const client = new UsersApiClient(request);
 
@@ -173,9 +170,8 @@ test.describe('DELETE /users/me — Delete User API', () => {
 
     // ── EDGE CASES ──────────────────────────────────────────────────────────
 
-    test('cannot delete the same user twice', async ({ request }) => {
-        // Create a user
-        const uniqueEmail = `double_${Date.now()}_${Math.random().toString(36).substring(7)}@example.com`;
+    test('cannot delete the same user twice', async ({ request, uniqueEmail }) => {
+        // Create a user (uniqueEmail provided by fixture)
         const newUser = {
             firstName: 'Double',
             lastName: 'Delete',
@@ -196,9 +192,8 @@ test.describe('DELETE /users/me — Delete User API', () => {
         expect(secondDeleteRes.status()).toBe(401);
     });
 
-    test('deletion response status is 200', async ({ request }) => {
-        // Create a user
-        const uniqueEmail = `statusok_${Date.now()}_${Math.random().toString(36).substring(7)}@example.com`;
+    test('deletion response status is 200', async ({ request, uniqueEmail }) => {
+        // Create a user (uniqueEmail provided by fixture)
         const newUser = {
             firstName: 'Status',
             lastName: 'Check',
@@ -216,9 +211,8 @@ test.describe('DELETE /users/me — Delete User API', () => {
         expect(deleteRes.status()).toBe(200);
     });
 
-    test('old token cannot be reused after user deletion', async ({ request }) => {
-        // Create a user
-        const uniqueEmail = `reuse_token_${Date.now()}_${Math.random().toString(36).substring(7)}@example.com`;
+    test('old token cannot be reused after user deletion', async ({ request, uniqueEmail }) => {
+        // Create a user (uniqueEmail provided by fixture)
         const newUser = {
             firstName: 'Token',
             lastName: 'Reuse',

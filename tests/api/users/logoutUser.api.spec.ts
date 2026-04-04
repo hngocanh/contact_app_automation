@@ -1,4 +1,4 @@
-import {test, expect} from '@playwright/test';
+import {test, expect} from '@fixtures/fixtures';
 import { UsersApiClient } from '@api/UserApiClient';
 
 test.describe('POST /users/logout — Logout User API', () => {
@@ -19,9 +19,8 @@ test.describe('POST /users/logout — Logout User API', () => {
         createdUsers.length = 0;
     });
 
-    test('successfully logs out an authenticated user', async ({ request }) => {
+    test('successfully logs out an authenticated user', async ({ request, uniqueEmail }) => {
         // Create a new user to log in and then log out
-        const uniqueEmail = `logout_${Date.now()}@example.com`;
         const newUser = {
             firstName: 'Logout',
             lastName: 'Test',
