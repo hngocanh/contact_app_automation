@@ -34,7 +34,7 @@ test.describe("POST /contacts - Add Contact API", () => {
         createdContacts.push(res._id);
 
         // Verify response structure
-        expect(res).toHaveProperty('_ids');
+        expect(res).toHaveProperty('_id');
         expect(res).toHaveProperty('firstName', newContact.firstName);
         expect(res).toHaveProperty('lastName', newContact.lastName);
         expect(res).toHaveProperty('email', newContact.email);
