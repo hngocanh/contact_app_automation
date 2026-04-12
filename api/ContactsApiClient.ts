@@ -83,6 +83,10 @@ export class ContactsApiClient extends BaseApiClient {
     return this.rawPost(ContactsApiClient.BASE, payload);
   }
 
+  rawGetContacts(): Promise<APIResponse> {
+    return this.rawGet(ContactsApiClient.BASE);
+  }
+
   rawGetContact(id: string): Promise<APIResponse> {
     return this.rawGet(`${ContactsApiClient.BASE}/${id}`);
   }

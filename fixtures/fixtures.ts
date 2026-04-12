@@ -34,6 +34,16 @@ export const test = base.extend<CustomFixtures>({
   authState: async ({ }, use) => {
 
     const statePath = process.env.AUTH_STATE_PATH ?? 'test-results/.auth/state.json';
+
+    // If the global-setup did not run or the file was removed, provide
+    // a clear, actionable error instead of letting readFileSync throw.
+    if (!fs.existsSync(statePath)) {
+      throw new Error(
+        `auth state file not found at "${statePath}". Ensure global-setup ran successfully and wrote the file.\n` +
+        `Make sure TEST_USER_EMAIL and TEST_USER_PASSWORD are set in your .env and that AUTH_STATE_PATH (if used) is correct.`
+      );
+    }
+
     const raw = fs.readFileSync(statePath, 'utf-8');
     await use(JSON.parse(raw) as AuthState);
   },
